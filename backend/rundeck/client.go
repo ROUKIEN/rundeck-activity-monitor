@@ -22,6 +22,7 @@ type RundeckHeaderTransport struct {
 func (rht *RundeckHeaderTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("X-Rundeck-Auth-Token", rht.Token)
+	req.Header.Add("User-Agent", "Rundeck-Activity-Monitor/1.0")
 	return rht.T.RoundTrip(req)
 }
 

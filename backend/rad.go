@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"ROUKIEN/rundeck-activity-monitor/cmd"
 	"log"
 	"os"
 
@@ -10,12 +10,6 @@ import (
 
 func main() {
 	app := &cli.App{
-		Name:  "boom",
-		Usage: "make an explosive entrance",
-		Action: func(c *cli.Context) error {
-			fmt.Println("Boom! I say")
-			return nil
-		},
 		Commands: []*cli.Command{
 			cmd.NewScrapeCmd(),
 		},
