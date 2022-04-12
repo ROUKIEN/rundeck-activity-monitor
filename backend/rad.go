@@ -16,6 +16,9 @@ func main() {
 			fmt.Println("Boom! I say")
 			return nil
 		},
+		Commands: []*cli.Command{
+			cmd.NewScrapeCmd(),
+		},
 	}
 
 	err := app.Run(os.Args)
