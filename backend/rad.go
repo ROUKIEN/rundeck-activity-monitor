@@ -12,11 +12,11 @@ func main() {
 	app := &cli.App{
 		Commands: []*cli.Command{
 			cmd.NewScrapeCmd(),
+			cmd.NewDatabaseCmd(),
 		},
 	}
 
-	err := app.Run(os.Args)
-	if err != nil {
+	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}
 }

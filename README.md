@@ -8,3 +8,9 @@ The scraper is in charge of requesting the different rundeck instances to get th
 
 1. build the frontend app (which is basically a react SPA)
 2. build the backend app and embedd the frontend inside it
+
+## Running locally
+
+1. Start the pg container
+2. Ensure the schema is up to date by running `rad database update`
+3. Start developping

@@ -2,9 +2,11 @@ package cmd
 
 import (
 	"ROUKIEN/rundeck-activity-monitor/config"
+	"ROUKIEN/rundeck-activity-monitor/database"
 	"ROUKIEN/rundeck-activity-monitor/rundeck"
 	"ROUKIEN/rundeck-activity-monitor/rundeck/spec"
 	"bufio"
+	"database/sql"
 	"fmt"
 	"math/rand"
 	"os"
@@ -45,6 +47,11 @@ func scrapeExecute(c *cli.Context) error {
 		return err
 	}
 
+	db, err := database.Db()
+	if err != nil {
+		return err
+	}
+
 	layout := "2006-01-02T15:04:05.000Z"
 	begin, err := time.Parse(layout, c.String("begin"))
 	if err != nil {
@@ -59,15 +66,15 @@ func scrapeExecute(c *cli.Context) error {
 
 	var wg sync.WaitGroup
 	rand.Seed(time.Now().UnixNano())
-	instanceExecutionsChannel := make(chan *spec.Execution)
+	instanceExecutionsChannel := make(chan *ScrapedExecution)
 
-	for _, instance := range conf.Instances {
+	for instance_label, instance := range conf.Instances {
 		wg.Add(1)
+		fmt.Printf("Scraping %s\n", instance_label)
 
-		go func(i config.RundeckInstance, b time.Time, e time.Time) {
+		go func(i config.RundeckInstance, il string, b time.Time, e time.Time) {
 			defer wg.Done()
-			fmt.Printf("Scraping %s...\n", i.Url)
-			executionsChan, err := scrapeInstanceExecutions(i, b, e)
+			executionsChan, err := scrapeInstanceExecutions(i, il, b, e)
 			if err != nil {
 				fmt.Printf("%s\n", err.Error())
 			}
@@ -75,7 +82,7 @@ func scrapeExecute(c *cli.Context) error {
 			for execution := range executionsChan {
 				instanceExecutionsChannel <- execution
 			}
-		}(instance, begin, end)
+		}(instance, instance_label, begin, end)
 	}
 
 	go func() {
@@ -83,17 +90,21 @@ func scrapeExecute(c *cli.Context) error {
 		close(instanceExecutionsChannel)
 	}()
 
-	allExecutions := make([]spec.Execution, 0)
 	for execution := range instanceExecutionsChannel {
-		allExecutions = append(allExecutions, *execution)
+		if err := handleExecutionRecording(db, execution.Instance, execution.Execution); err != nil {
+			fmt.Printf("[%s]failed to save execution #%d: %s \n", execution.Instance, execution.Execution.ID, err.Error())
+		}
 	}
-
-	fmt.Printf("%d executions over all instances\n", len(allExecutions))
 
 	return nil
 }
 
-func scrapeInstanceExecutions(instance config.RundeckInstance, begin time.Time, end time.Time) (chan *spec.Execution, error) {
+type ScrapedExecution struct {
+	Execution *spec.Execution
+	Instance  string
+}
+
+func scrapeInstanceExecutions(instance config.RundeckInstance, instanceLabel string, begin time.Time, end time.Time) (chan *ScrapedExecution, error) {
 	client := rundeck.NewRundeckClient(instance.Url, instance.Token, instance.ApiVersion, time.Duration(instance.Timeout)*time.Millisecond)
 	projects, err := client.ListProjects()
 	if err != nil {
@@ -101,7 +112,7 @@ func scrapeInstanceExecutions(instance config.RundeckInstance, begin time.Time, 
 	}
 
 	var wg sync.WaitGroup
-	currChan := make(chan *spec.Execution)
+	currChan := make(chan *ScrapedExecution)
 	for _, project := range projects {
 		wg.Add(1)
 
@@ -109,9 +120,13 @@ func scrapeInstanceExecutions(instance config.RundeckInstance, begin time.Time, 
 			defer wg.Done()
 			executions, _ := client.ListProjectExecutions(p.Name, begin, end)
 			for _, execution := range executions {
-				currChan <- &execution
+				se := ScrapedExecution{
+					Execution: &execution,
+					Instance:  instanceLabel,
+				}
+				currChan <- &se
 			}
-			fmt.Printf("[%s][%s] %d executions\n", client.Url, p.Name, len(executions))
+			fmt.Printf("[%s][%s] %d executions\n", instanceLabel, p.Name, len(executions))
 		}(client, project)
 	}
 
@@ -121,4 +136,17 @@ func scrapeInstanceExecutions(instance config.RundeckInstance, begin time.Time, 
 	}()
 
 	return currChan, nil
+}
+
+func handleExecutionRecording(db *sql.DB, instance_name string, e *spec.Execution) error {
+	executionInDB, err := database.FindExecution(db, instance_name, e)
+	if err != nil {
+		return err
+	}
+
+	if executionInDB == nil {
+		return database.SaveExecution(db, instance_name, e)
+	}
+
+	return nil
 }
