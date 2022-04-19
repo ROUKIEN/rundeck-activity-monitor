@@ -13,6 +13,7 @@ func main() {
 		Commands: []*cli.Command{
 			cmd.NewScrapeCmd(),
 			cmd.NewDatabaseCmd(),
+			cmd.NewServeCmd(),
 		},
 	}
 

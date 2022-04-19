@@ -53,3 +53,49 @@ INSERT INTO rad_executions_history (
 	$8,
 	$9
 );`
+
+const SQL_FIND_EXECUTIONS_BY_DATE = `
+SELECT
+	id,
+	rundeck_instance,
+	rundeck_project,
+	rundeck_job,
+	rundeck_job_id,
+	execution_status,
+	execution_id,
+	execution_start,
+	execution_end,
+	execution_permalink
+FROM rad_executions_history
+WHERE
+	execution_start >= $1
+AND
+	execution_end < $2
+ORDER BY execution_start;`
+
+const SQL_FIND_PROJECTS_ON_TIMERANGE = `
+SELECT
+	DISTINCT(rundeck_project) AS projects
+FROM rad_executions_history
+WHERE
+	execution_start >= $1
+AND
+	execution_end < $2;`
+
+const SQL_FIND_INSTANCES_ON_TIMERANGE = `
+SELECT
+	DISTINCT(rundeck_instance) AS instances
+FROM rad_executions_history
+WHERE
+	execution_start >= $1
+AND
+	execution_end < $2;`
+
+const SQL_FIND_STATUSES_ON_TIMERANGE = `
+SELECT
+	DISTINCT(execution_status) AS statuses
+FROM rad_executions_history
+WHERE
+	execution_start >= $1
+AND
+	execution_end < $2;`

@@ -56,14 +56,6 @@ func NewDatabaseCmd() *cli.Command {
 					return nil
 				},
 			},
-			{
-				Name:  "erase",
-				Usage: "Deletes everything in the database",
-				Action: func(c *cli.Context) error {
-					fmt.Printf("Erasing all values in database...\n")
-					return nil
-				},
-			},
 		},
 	}
 }

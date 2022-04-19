@@ -18,10 +18,9 @@ import (
 
 func NewScrapeCmd() *cli.Command {
 	return &cli.Command{
-		Name:    "scrape",
-		Aliases: []string{"s"},
-		Usage:   "scrape rundeck instances",
-		Action:  scrapeExecute,
+		Name:   "scrape",
+		Usage:  "scrape rundeck instances",
+		Action: scrapeExecute,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "begin",
