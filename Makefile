@@ -1,2 +1,2 @@
 build:
-	docker build -t rad:latest .
+	docker build -t ram:latest .

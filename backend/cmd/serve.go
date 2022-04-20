@@ -3,14 +3,19 @@ package cmd
 import (
 	"ROUKIEN/rundeck-activity-monitor/database"
 	"database/sql"
+	"embed"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/urfave/cli/v2"
 )
+
+//go:embed static/*
+var staticApp embed.FS
 
 func NewServeCmd() *cli.Command {
 	return &cli.Command{
@@ -97,11 +102,19 @@ func getExecutionsHandler(db *sql.DB) func(w http.ResponseWriter, req *http.Requ
 }
 
 func serveExecute(c *cli.Context) error {
-
 	db, err := database.Db()
 	if err != nil {
 		return err
 	}
+
+	fsys := fs.FS(staticApp)
+	contentStatic, err := fs.Sub(fsys, "static")
+	if err != nil {
+		return err
+	}
+
+	fs := http.FileServer(http.FS(contentStatic))
+	http.Handle("/", fs)
 
 	http.HandleFunc("/api/executions", getExecutionsHandler(db))
 	http.HandleFunc("/api/filters", getFiltersHandler(db))
