@@ -15,6 +15,14 @@ func main() {
 
 func run(args []string) {
 	app := &cli.App{
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "config",
+				Aliases: []string{"c"},
+				Value:   "config.yml",
+				Usage:   "path to the configuration file to use",
+			},
+		},
 		Commands: []*cli.Command{
 			cmd.NewScrapeCmd(),
 			cmd.NewDatabaseCmd(),
