@@ -7,12 +7,12 @@ import (
 	"ROUKIEN/rundeck-activity-monitor/rundeck/spec"
 	"bufio"
 	"database/sql"
-	"fmt"
 	"math/rand"
 	"os"
 	"sync"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 )
 
@@ -61,7 +61,7 @@ func scrapeExecute(c *cli.Context) error {
 		return err
 	}
 
-	fmt.Printf("there are %d instances to scrape\n", len(conf.Instances))
+	log.Infof("there are %d instances to scrape", len(conf.Instances))
 
 	var wg sync.WaitGroup
 	rand.Seed(time.Now().UnixNano())
@@ -69,13 +69,14 @@ func scrapeExecute(c *cli.Context) error {
 
 	for instance_label, instance := range conf.Instances {
 		wg.Add(1)
-		fmt.Printf("Scraping %s\n", instance_label)
+		log.Infof("Scraping %s", instance_label)
 
 		go func(i config.RundeckInstance, il string, b time.Time, e time.Time) {
 			defer wg.Done()
 			executionsChan, err := scrapeInstanceExecutions(i, il, b, e)
 			if err != nil {
-				fmt.Printf("%s\n", err.Error())
+				log.Error(err)
+				// fmt.Printf("%s\n", err.Error())
 			}
 
 			for execution := range executionsChan {
@@ -91,7 +92,7 @@ func scrapeExecute(c *cli.Context) error {
 
 	for execution := range instanceExecutionsChannel {
 		if err := handleExecutionRecording(db, execution.Instance, execution.Execution); err != nil {
-			fmt.Printf("[%s]failed to save execution #%d: %s \n", execution.Instance, execution.Execution.ID, err.Error())
+			log.Errorf("[%s]failed to save execution #%d: %s", execution.Instance, execution.Execution.ID, err.Error())
 		}
 	}
 
@@ -114,7 +115,6 @@ func scrapeInstanceExecutions(instance config.RundeckInstance, instanceLabel str
 	currChan := make(chan *ScrapedExecution)
 	for _, project := range projects {
 		wg.Add(1)
-
 		go func(client *rundeck.Rundeck, p spec.Project) {
 			defer wg.Done()
 			executions, _ := client.ListProjectExecutions(p.Name, begin, end)
@@ -125,13 +125,18 @@ func scrapeInstanceExecutions(instance config.RundeckInstance, instanceLabel str
 				}
 				currChan <- &se
 			}
-			fmt.Printf("[%s][%s] %d executions\n", instanceLabel, p.Name, len(executions))
+			log.WithFields(log.Fields{
+				"instance": instanceLabel,
+				"project":  p.Name,
+			}).Debugf("scraped %d executions", len(executions))
 		}(client, project)
 	}
 
 	go func() {
 		wg.Wait()
 		close(currChan)
+
+		log.Info("Scraping is over.")
 	}()
 
 	return currChan, nil
