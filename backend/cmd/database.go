@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"ROUKIEN/rundeck-activity-monitor/database"
-	"fmt"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 )
 
@@ -16,7 +16,7 @@ func NewDatabaseCmd() *cli.Command {
 				Name:  "update",
 				Usage: "ensure RAM database is up to date",
 				Action: func(c *cli.Context) error {
-					fmt.Printf("Checking database status...\n")
+					log.Info("Checking database status...")
 
 					db, err := database.Db()
 					if err != nil {
@@ -37,7 +37,7 @@ func NewDatabaseCmd() *cli.Command {
 					}
 
 					if tableExists {
-						fmt.Printf("Tables are already up to date.\n")
+						log.Info("Tables are already up to date.")
 						return nil
 					}
 
@@ -51,7 +51,7 @@ func NewDatabaseCmd() *cli.Command {
 						return err
 					}
 
-					fmt.Printf("Tables created.\n")
+					log.Info("Tables created.")
 
 					return nil
 				},

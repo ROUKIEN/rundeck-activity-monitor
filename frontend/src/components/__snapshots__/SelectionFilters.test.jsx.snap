@@ -1,0 +1,207 @@
+// Vitest Snapshot v1
+
+exports[`SelectionFilters renders correctly > Rendered list without any facet selected 1`] = `
+[
+  <p
+    className="menu-label"
+  >
+    Search
+  </p>,
+  <ul
+    className="menu-list"
+  >
+    <li>
+      instances
+       (
+      3
+      )
+      <ul>
+        <li>
+          <label
+            className="checkbox"
+          >
+            <input
+              defaultChecked={false}
+              onChange={[Function]}
+              type="checkbox"
+            />
+             
+            foo
+          </label>
+        </li>
+        <li>
+          <label
+            className="checkbox"
+          >
+            <input
+              defaultChecked={false}
+              onChange={[Function]}
+              type="checkbox"
+            />
+             
+            bar
+          </label>
+        </li>
+        <li>
+          <label
+            className="checkbox"
+          >
+            <input
+              defaultChecked={false}
+              onChange={[Function]}
+              type="checkbox"
+            />
+             
+            zee
+          </label>
+        </li>
+      </ul>
+    </li>
+    <li>
+      statuses
+       (
+      2
+      )
+      <ul>
+        <li>
+          <label
+            className="checkbox"
+          >
+            <input
+              defaultChecked={false}
+              onChange={[Function]}
+              type="checkbox"
+            />
+             
+            succeeded
+          </label>
+        </li>
+        <li>
+          <label
+            className="checkbox"
+          >
+            <input
+              defaultChecked={false}
+              onChange={[Function]}
+              type="checkbox"
+            />
+             
+            failed
+          </label>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <button
+        className="button is-small is-primary"
+        onClick={[Function]}
+      >
+        Reset Filters
+      </button>
+    </li>
+  </ul>,
+]
+`;
+
+exports[`SelectionFilters renders with selection > Rendered list with foo instance selected 1`] = `
+[
+  <p
+    className="menu-label"
+  >
+    Search
+  </p>,
+  <ul
+    className="menu-list"
+  >
+    <li>
+      instances
+       (
+      3
+      )
+      <ul>
+        <li>
+          <label
+            className="checkbox"
+          >
+            <input
+              defaultChecked={true}
+              onChange={[Function]}
+              type="checkbox"
+            />
+             
+            foo
+          </label>
+        </li>
+        <li>
+          <label
+            className="checkbox"
+          >
+            <input
+              defaultChecked={false}
+              onChange={[Function]}
+              type="checkbox"
+            />
+             
+            bar
+          </label>
+        </li>
+        <li>
+          <label
+            className="checkbox"
+          >
+            <input
+              defaultChecked={false}
+              onChange={[Function]}
+              type="checkbox"
+            />
+             
+            zee
+          </label>
+        </li>
+      </ul>
+    </li>
+    <li>
+      statuses
+       (
+      2
+      )
+      <ul>
+        <li>
+          <label
+            className="checkbox"
+          >
+            <input
+              defaultChecked={false}
+              onChange={[Function]}
+              type="checkbox"
+            />
+             
+            succeeded
+          </label>
+        </li>
+        <li>
+          <label
+            className="checkbox"
+          >
+            <input
+              defaultChecked={false}
+              onChange={[Function]}
+              type="checkbox"
+            />
+             
+            failed
+          </label>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <button
+        className="button is-small is-primary"
+        onClick={[Function]}
+      >
+        Reset Filters
+      </button>
+    </li>
+  </ul>,
+]
+`;

@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 )
 
@@ -34,7 +35,6 @@ func NewServeCmd() *cli.Command {
 
 func getFiltersHandler(db *sql.DB) func(w http.ResponseWriter, req *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
-		fmt.Printf("Fetching filters\n")
 		query := req.URL.Query()
 		begin := time.Now().Add(time.Duration(-4) * time.Hour)
 		end := time.Now()
@@ -51,8 +51,11 @@ func getFiltersHandler(db *sql.DB) func(w http.ResponseWriter, req *http.Request
 			}
 		}
 
-		fmt.Printf("%s\n", begin)
-		fmt.Printf("%s\n", end)
+		log.WithFields(log.Fields{
+			"begin": begin,
+			"end":   end,
+		}).Trace("Fetch filters")
+
 		filters, err := database.FindFilters(db, begin, end)
 		if err != nil {
 			internalError := http.StatusInternalServerError
@@ -66,7 +69,6 @@ func getFiltersHandler(db *sql.DB) func(w http.ResponseWriter, req *http.Request
 
 func getExecutionsHandler(db *sql.DB) func(w http.ResponseWriter, req *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
-		fmt.Printf("Fetching executions\n")
 		query := req.URL.Query()
 		begin := time.Now().Add(time.Duration(-4) * time.Hour)
 		end := time.Now()
@@ -83,8 +85,6 @@ func getExecutionsHandler(db *sql.DB) func(w http.ResponseWriter, req *http.Requ
 			}
 		}
 
-		fmt.Printf("%s\n", begin)
-		fmt.Printf("%s\n", end)
 		executions, err := database.FindExecutions(
 			db,
 			begin,
@@ -94,7 +94,12 @@ func getExecutionsHandler(db *sql.DB) func(w http.ResponseWriter, req *http.Requ
 			internalError := http.StatusInternalServerError
 			http.Error(w, err.Error(), internalError)
 		} else {
-			fmt.Printf("%d executions returned\n", len(executions))
+			log.WithFields(log.Fields{
+				"begin":      begin,
+				"end":        end,
+				"executions": len(executions),
+			}).Trace("Fetch executions")
+
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(executions)
 		}
@@ -119,7 +124,7 @@ func serveExecute(c *cli.Context) error {
 	http.HandleFunc("/api/executions", getExecutionsHandler(db))
 	http.HandleFunc("/api/filters", getFiltersHandler(db))
 	port := 4000
-	fmt.Printf("Listening on port %d...\n", port)
+	log.Infof("Listening on port %d...", port)
 	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 
 	return nil
