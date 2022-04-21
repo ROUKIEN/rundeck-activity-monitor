@@ -37,7 +37,7 @@ func NewScrapeCmd() *cli.Command {
 }
 
 func scrapeExecute(c *cli.Context) error {
-	f, err := os.Open("config.yml")
+	f, err := os.Open(c.String("config"))
 	if err != nil {
 		return err
 	}
