@@ -1,0 +1,13 @@
+// Vitest Snapshot v1
+
+exports[`TimelineChart renders correctly > Rendered list without any facet selected 1`] = `
+<div
+  className="message"
+>
+  <div
+    className="message-body"
+  >
+    Loading, please wait...
+  </div>
+</div>
+`;

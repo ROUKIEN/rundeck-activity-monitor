@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 
-import { parseExecutions, filterExecutions } from './utils/index'
+import logo from './logo.svg'
+
+import { filterExecutions } from './utils/index'
 
 import DateRangeInput from './components/DateRangeInput'
 import SelectionFilters from './components/SelectionFilters'
@@ -30,7 +32,6 @@ async function fetchExecutions (options = {}) {
 }
 
 function App() {
-  const [colors, setColors] = useState([])
   const [data, setData] = useState(undefined)
   const [filteredData, setFilteredData] = useState(undefined)
   const [filters, setFilters] = useState({})
@@ -49,10 +50,7 @@ function App() {
     setSelectionFilters(newSelection)
 
     const filteredExecutions = filterExecutions(unfilteredData, newSelection)
-
-    const { colors, data } = parseExecutions(filteredExecutions)
-    setFilteredData(data)
-    setColors(colors)
+    setFilteredData(filteredExecutions)
   }
 
   const handleRangeChange = async range => {
@@ -76,10 +74,7 @@ function App() {
     const executions = await fetchExecutions(params)
     setData(executions)
     const filteredExecutions = filterExecutions(executions, selectionFilters)
-
-    const { colors, data } = parseExecutions(filteredExecutions)
-    setFilteredData(data)
-    setColors(colors)
+    setFilteredData(filteredExecutions)
   }
 
   useEffect(async () => {
@@ -99,7 +94,6 @@ function App() {
       params.end = end
       const newEndDate = new Date(parseInt(end))
       setEndDate(newEndDate)
-      console.log(newEndDate)
     }
 
     const filters = await fetchFilters(params)
@@ -108,17 +102,16 @@ function App() {
     const executions = await fetchExecutions(params)
     setData(executions)
     const filteredExecutions = filterExecutions(executions, selectionFilters)
-
-    const { colors, data } = parseExecutions(filteredExecutions)
-    setFilteredData(data)
-    setColors(colors)
+    setFilteredData(filteredExecutions)
   }, [])
 
   return (
     <>
       <nav className="navbar" role="navigation" aria-label="main navigation">
         <div className="navbar-brand">
-          <a className="navbar-item">RAM: Rundeck Activity Monitor</a>
+          <a className="navbar-item" href="/">
+          <img src={logo} /> <span className="navbar-item has-text-weight-medium">Rundeck Activity Monitor</span>
+          </a>
         </div>
         <div className="navbar-end">
           <span className="navbar-item">
@@ -133,8 +126,8 @@ function App() {
       </nav>
       <section className="section is-small has-background-primary">
         <div className="container is-widescreen">
-          <h1 className="title">Rundeck Activity Monitor</h1>
-          <h2 className="subtitle">Having a bunch of rundeck instances ? RAM is the tool you need.</h2>
+          <h1 className="title has-text-white">Rundeck Activity Monitor</h1>
+          <h2 className="subtitle has-text-white">Having a bunch of rundeck instances ? RAM is the tool you need.</h2>
         </div>
       </section>
       <section className="section">
@@ -150,7 +143,7 @@ function App() {
               </aside>
             </div>
             <div className="column">
-              <RenderResults colors={colors} data={filteredData}></RenderResults>
+              <RenderResults executions={filteredData}></RenderResults>
             </div>
           </div>
         </div>
