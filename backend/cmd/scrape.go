@@ -65,7 +65,7 @@ func scrapeExecute(c *cli.Context) error {
 
 	var wg sync.WaitGroup
 	rand.Seed(time.Now().UnixNano())
-	instanceExecutionsChannel := make(chan *ScrapedExecution)
+	instanceExecutionsChannel := make(chan *config.ScrapedExecution)
 
 	for instance_label, instance := range conf.Instances {
 		wg.Add(1)
@@ -73,20 +73,16 @@ func scrapeExecute(c *cli.Context) error {
 
 		go func(i config.RundeckInstance, il string, b time.Time, e time.Time) {
 			defer wg.Done()
-			executionsChan, err := scrapeInstanceExecutions(i, il, b, e)
+			err := scrapeInstanceExecutions(i, il, b, e, instanceExecutionsChannel)
 			if err != nil {
 				log.Error(err)
-				// fmt.Printf("%s\n", err.Error())
-			}
-
-			for execution := range executionsChan {
-				instanceExecutionsChannel <- execution
 			}
 		}(instance, instance_label, begin, end)
 	}
 
 	go func() {
 		wg.Wait()
+		log.Info("Done.")
 		close(instanceExecutionsChannel)
 	}()
 
@@ -99,47 +95,42 @@ func scrapeExecute(c *cli.Context) error {
 	return nil
 }
 
-type ScrapedExecution struct {
-	Execution *spec.Execution
-	Instance  string
-}
-
-func scrapeInstanceExecutions(instance config.RundeckInstance, instanceLabel string, begin time.Time, end time.Time) (chan *ScrapedExecution, error) {
+func scrapeInstanceExecutions(instance config.RundeckInstance, instanceLabel string, begin time.Time, end time.Time, ch chan<- *config.ScrapedExecution) error {
 	client := rundeck.NewRundeckClient(instance.Url, instance.Token, instance.ApiVersion, time.Duration(instance.Timeout)*time.Millisecond)
 	projects, err := client.ListProjects()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	var wg sync.WaitGroup
-	currChan := make(chan *ScrapedExecution)
 	for _, project := range projects {
 		wg.Add(1)
-		go func(client *rundeck.Rundeck, p spec.Project) {
+		go func(client *rundeck.Rundeck, p spec.Project, cha chan<- *config.ScrapedExecution) {
+
 			defer wg.Done()
-			executions, _ := client.ListProjectExecutions(p.Name, begin, end)
-			for _, execution := range executions {
-				se := ScrapedExecution{
+			ch := client.ListProjectExecutions(p.Name, begin, end)
+			i := 0
+			for execution := range ch {
+				i = i + 1
+				se := config.ScrapedExecution{
 					Execution: &execution,
 					Instance:  instanceLabel,
 				}
-				currChan <- &se
+				cha <- &se
 			}
+
 			log.WithFields(log.Fields{
 				"instance": instanceLabel,
 				"project":  p.Name,
-			}).Debugf("scraped %d executions", len(executions))
-		}(client, project)
+			}).Infof("scraped %d executions", i)
+		}(client, project, ch)
 	}
 
-	go func() {
-		wg.Wait()
-		close(currChan)
+	wg.Wait()
 
-		log.Info("Scraping is over.")
-	}()
+	log.Infof("Scraping of %s is over.", instanceLabel)
 
-	return currChan, nil
+	return nil
 }
 
 func handleExecutionRecording(db *sql.DB, instance_name string, e *spec.Execution) error {
@@ -149,7 +140,18 @@ func handleExecutionRecording(db *sql.DB, instance_name string, e *spec.Executio
 	}
 
 	if executionInDB == nil {
+		log.WithFields(log.Fields{
+			"instance": instance_name,
+			"project":  e.Project,
+			"job":      e.Job.ID,
+		}).Debugf("Will save execution #%d", e.ID)
 		return database.SaveExecution(db, instance_name, e)
+	} else {
+		// log.WithFields(log.Fields{
+		// 	"instance": instance_name,
+		// 	"project":  e.Project,
+		// 	"job":      e.Job.ID,
+		// }).Debugf("execution #%d is already known.", e.ID)
 	}
 
 	return nil

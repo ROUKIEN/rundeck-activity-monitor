@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type Rundeck struct {
@@ -76,33 +78,38 @@ type executionsResponse struct {
 	Executions []spec.Execution `json:"executions"`
 }
 
-func (rd *Rundeck) ListProjectExecutions(project string, begin time.Time, end time.Time) ([]spec.Execution, error) {
+func (rd *Rundeck) ListProjectExecutions(project string, begin time.Time, end time.Time) <-chan spec.Execution {
+	ch := make(chan spec.Execution)
 	max := 20
 	offset := 0
+	go func() {
+		for {
+			url := fmt.Sprintf("%s/api/%d/project/%s/executions?begin=%s&end=%s&max=%d&offset=%d", rd.Url, rd.ApiVersion, project, begin.UTC().Format("2006-01-02T15:04:05Z"), end.UTC().Format("2006-01-02T15:04:05Z"), max, offset)
+			resp, err := rd.Client.Get(url)
+			if err != nil {
+				log.Error(err)
+			}
+			defer resp.Body.Close()
 
-	executions := make([]spec.Execution, 0)
-	for {
-		url := fmt.Sprintf("%s/api/%d/project/%s/executions?begin=%s&end=%s&max=%d&offset=%d", rd.Url, rd.ApiVersion, project, begin.UTC().Format("2006-01-02T15:04:05Z"), end.UTC().Format("2006-01-02T15:04:05Z"), max, offset)
-		resp, err := rd.Client.Get(url)
-		if err != nil {
-			return nil, err
+			executionsResp := executionsResponse{}
+
+			if err := json.NewDecoder(resp.Body).Decode(&executionsResp); err != nil {
+				log.Error(err)
+			}
+
+			for _, execution := range executionsResp.Executions {
+				ch <- execution
+			}
+
+			if executionsResp.Paging.Count+executionsResp.Paging.Offset == executionsResp.Paging.Total {
+				break
+			}
+
+			offset += executionsResp.Paging.Max
 		}
-		defer resp.Body.Close()
 
-		executionsResp := executionsResponse{}
+		close(ch)
+	}()
 
-		if err := json.NewDecoder(resp.Body).Decode(&executionsResp); err != nil {
-			return nil, err
-		}
-
-		executions = append(executions, executionsResp.Executions...)
-
-		if executionsResp.Paging.Count+executionsResp.Paging.Offset == executionsResp.Paging.Total {
-			break
-		}
-
-		offset += executionsResp.Paging.Max
-	}
-
-	return executions, nil
+	return ch
 }
