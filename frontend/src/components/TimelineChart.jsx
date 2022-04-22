@@ -13,7 +13,7 @@ const FailedToLoad = () =>
   </div>
 
 function TimelineChart({ executions }) {
-  const { colors, data } = parseExecutions(executions)
+  const { data } = parseExecutions(executions)
 
   return (
     <Chart
@@ -21,7 +21,6 @@ function TimelineChart({ executions }) {
       data={data}
       options={
         {
-          colors,
           timeline: {
             showBarLabels: false
           }

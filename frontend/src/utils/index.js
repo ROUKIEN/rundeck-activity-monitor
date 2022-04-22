@@ -1,10 +1,9 @@
 export function parseExecutions (executions) {
-  const colors = []
-
   const columns = [
     { type: "string", id: "Job" },
     { type: "string", id: "Exec" },
     { type: "string", role: "tooltip" },
+    { type: "string", role: "style" },
     { type: "date", id: "Start" },
     { type: "date", id: "End" },
   ]
@@ -51,15 +50,13 @@ export function parseExecutions (executions) {
           </ul>
         </div>
       </div>`,
+      colorMapping[execution.execution_status] || '#FFA500',
       new Date(execution.execution_start),
       new Date(execution.execution_end),
     ])
-
-    colors.push(colorMapping[execution.execution_status] || '#FFA500')
   }
 
   return {
-    colors,
     data: [columns, ...jobExecutions]
   }
 }
