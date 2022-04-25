@@ -105,25 +105,25 @@ func scrapeInstanceExecutions(instance config.RundeckInstance, instanceLabel str
 	var wg sync.WaitGroup
 	for _, project := range projects {
 		wg.Add(1)
-		go func(client *rundeck.Rundeck, p spec.Project, cha chan<- *config.ScrapedExecution) {
+		go func(p spec.Project) {
 
 			defer wg.Done()
-			ch := client.ListProjectExecutions(p.Name, begin, end)
+			execCh := client.ListProjectExecutions(p.Name, begin, end)
 			i := 0
-			for execution := range ch {
+			for execution := range execCh {
 				i = i + 1
 				se := config.ScrapedExecution{
 					Execution: &execution,
 					Instance:  instanceLabel,
 				}
-				cha <- &se
+				ch <- &se
 			}
 
 			log.WithFields(log.Fields{
 				"instance": instanceLabel,
 				"project":  p.Name,
 			}).Infof("scraped %d executions", i)
-		}(client, project, ch)
+		}(project)
 	}
 
 	wg.Wait()
