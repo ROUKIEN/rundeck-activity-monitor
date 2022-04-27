@@ -1,23 +1,25 @@
 {
-  "name": "rd-executions-viewer",
+  "name": "rundeck-activity-monitor-ui",
   "private": true,
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest"
+    "test:unit": "TZ=utc vitest",
+    "test:coverage": "TZ=utc vitest run --coverage"
   },
   "dependencies": {
+    "bulma": "^0.9.3",
+    "date-fns": "^2.28.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-google-charts": "^4.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^1.0.7",
-    "bulma": "^0.9.3",
-    "bulma-calendar": "^6.1.18",
-    "happy-dom": "^2.55.0",
+    "c8": "^7.11.2",
+    "happy-dom": "^3.1.0",
     "react-test-renderer": "^17.0.2",
     "vite": "^2.9.0",
     "vitest": "^0.9.3"

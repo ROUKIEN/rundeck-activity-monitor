@@ -41,13 +41,13 @@ func getFiltersHandler(db *sql.DB) func(w http.ResponseWriter, req *http.Request
 
 		if query.Has("begin") {
 			if n, err := strconv.ParseInt(query.Get("begin"), 10, 64); err == nil {
-				begin = time.Unix(n/1000, 0)
+				begin = time.Unix(n/1000, 0).UTC()
 			}
 		}
 
 		if query.Has("end") {
 			if n, err := strconv.ParseInt(query.Get("end"), 10, 64); err == nil {
-				end = time.Unix(n/1000, 0)
+				end = time.Unix(n/1000, 0).UTC()
 			}
 		}
 
@@ -75,13 +75,13 @@ func getExecutionsHandler(db *sql.DB) func(w http.ResponseWriter, req *http.Requ
 
 		if query.Has("begin") {
 			if n, err := strconv.ParseInt(query.Get("begin"), 10, 64); err == nil {
-				begin = time.Unix(n/1000, 0)
+				begin = time.Unix(n/1000, 0).UTC()
 			}
 		}
 
 		if query.Has("end") {
 			if n, err := strconv.ParseInt(query.Get("end"), 10, 64); err == nil {
-				end = time.Unix(n/1000, 0)
+				end = time.Unix(n/1000, 0).UTC()
 			}
 		}
 

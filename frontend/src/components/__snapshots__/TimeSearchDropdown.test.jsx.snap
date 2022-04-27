@@ -1,0 +1,221 @@
+// Vitest Snapshot v1
+
+exports[`emits a custom time range > Defaults to since mode 1`] = `
+<div
+  className="navbar-item has-dropdown is-hoverable"
+>
+  <a
+    className="navbar-link"
+  >
+    Search
+  </a>
+  <div
+    className="navbar-dropdown is-right"
+  >
+    <span
+      className="navbar-item"
+    >
+      <div
+        className="control"
+      >
+        <label
+          className="radio"
+        >
+          <input
+            data-testid="radio-since"
+            defaultChecked={true}
+            name="mode"
+            onClick={[Function]}
+            type="radio"
+            value="since"
+          />
+           Since
+        </label>
+        <label
+          className="radio"
+        >
+          <input
+            data-testid="radio-range"
+            defaultChecked={false}
+            name="mode"
+            onClick={[Function]}
+            type="radio"
+            value="range"
+          />
+           Range
+        </label>
+      </div>
+    </span>
+    <span
+      className="navbar-item"
+    >
+      <div
+        className="select is-fullwidth"
+      >
+        <select
+          onChange={[Function]}
+        >
+          <option
+            value={3600000}
+          >
+            Past 1 hour
+          </option>
+          <option
+            value={14400000}
+          >
+            Past 4 hours
+          </option>
+          <option
+            value={43200000}
+          >
+            Past 12 hours
+          </option>
+          <option
+            value={86400000}
+          >
+            Past 1 day
+          </option>
+        </select>
+      </div>
+    </span>
+    <span
+      className="navbar-item"
+    >
+      <div
+        className="field is-grouped is-grouped-centered"
+      >
+        <p
+          className="control"
+        >
+          <button
+            className="button is-primary"
+            onClick={[Function]}
+          >
+            Search
+          </button>
+        </p>
+      </div>
+    </span>
+  </div>
+</div>
+`;
+
+exports[`emits a custom time range > Switched to range mode with custom range 1`] = `
+<div
+  className="navbar-item has-dropdown is-hoverable"
+>
+  <a
+    className="navbar-link"
+  >
+    Search
+  </a>
+  <div
+    className="navbar-dropdown is-right"
+  >
+    <span
+      className="navbar-item"
+    >
+      <div
+        className="control"
+      >
+        <label
+          className="radio"
+        >
+          <input
+            data-testid="radio-since"
+            defaultChecked={false}
+            name="mode"
+            onClick={[Function]}
+            type="radio"
+            value="since"
+          />
+           Since
+        </label>
+        <label
+          className="radio"
+        >
+          <input
+            data-testid="radio-range"
+            defaultChecked={true}
+            name="mode"
+            onClick={[Function]}
+            type="radio"
+            value="range"
+          />
+           Range
+        </label>
+      </div>
+    </span>
+    <span
+      className="navbar-item"
+    >
+      <div
+        className="field"
+      >
+        <label
+          className="label"
+          htmlFor="dti-From"
+        >
+          From
+        </label>
+        <div
+          className="control"
+        >
+          <input
+            className="input is-fullwidth datetime-input"
+            data-testid="datetimeinput-From"
+            id="dti-From"
+            onChange={[Function]}
+            type="datetime-local"
+            value="2022-01-01T00:00"
+          />
+        </div>
+      </div>
+    </span>
+    <span
+      className="navbar-item"
+    >
+      <div
+        className="field"
+      >
+        <label
+          className="label"
+          htmlFor="dti-To"
+        >
+          To
+        </label>
+        <div
+          className="control"
+        >
+          <input
+            className="input is-fullwidth datetime-input"
+            data-testid="datetimeinput-To"
+            id="dti-To"
+            onChange={[Function]}
+            type="datetime-local"
+            value="2022-01-02T00:00"
+          />
+        </div>
+      </div>
+    </span>
+    <span
+      className="navbar-item"
+    >
+      <div
+        className="field is-grouped is-grouped-centered"
+      >
+        <p
+          className="control"
+        >
+          <button
+            className="button is-primary"
+            onClick={[Function]}
+          >
+            Search
+          </button>
+        </p>
+      </div>
+    </span>
+  </div>
+</div>
+`;

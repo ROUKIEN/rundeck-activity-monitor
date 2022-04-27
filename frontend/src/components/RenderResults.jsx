@@ -1,17 +1,17 @@
 import React from 'react'
 import TimelineChart from './TimelineChart'
 
-function RenderResults ({ executions }) {
-  if (executions == undefined) {
+function RenderResults (props) {
+  if (props.executions == undefined) {
     return (
       <div className="message">
         <div className="message-body">Loading Executions...</div>
       </div>
     )
   } else {
-    if (executions.length > 0) {
+    if (props.executions.length > 0) {
       return (
-          <TimelineChart executions={executions}></TimelineChart>
+          <TimelineChart {...props}></TimelineChart>
       )
     } else {
       return (
