@@ -8,7 +8,7 @@ const TIME_MODE_SINCE = 'since'
 const TimeSearchDropdown = ({ beginDate, endDate, onConfirm = () => {} }) => {
   const [currentBeginDate, setCurrentBeginDate] = useState(beginDate)
   const [currentEndDate, setCurrentEndDate] = useState(endDate)
-  const [since, setSince] = useState(0)
+  const [since, setSince] = useState(60*60*1000)
   const [timeMode, setTimeMode] = useState(TIME_MODE_SINCE)
 
   const onValueChange = e => {

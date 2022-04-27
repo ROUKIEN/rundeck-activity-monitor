@@ -166,7 +166,6 @@ exports[`emits a custom time range > Switched to range mode with custom range 1`
             data-testid="datetimeinput-From"
             id="dti-From"
             onChange={[Function]}
-            title="2022-01-01T00:00"
             type="datetime-local"
             value="2022-01-01T00:00"
           />
@@ -193,7 +192,6 @@ exports[`emits a custom time range > Switched to range mode with custom range 1`
             data-testid="datetimeinput-To"
             id="dti-To"
             onChange={[Function]}
-            title="2022-01-02T00:00"
             type="datetime-local"
             value="2022-01-02T00:00"
           />

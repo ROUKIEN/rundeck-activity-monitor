@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 
+// this component is a bit tricky because we have to deal with the non-UTC timezone
 const DateTimeInput = ({ value, label, maxDate = null, minDate = null, onChange = () => {} }) => {
   const tzOffset = (new Date()).getTimezoneOffset() * 60000
-  const val = (new Date(value)).toISOString().substring(0, 16)
+  const val = new Date(new Date(new Date(value) - tzOffset)).toISOString().substring(0, 16)
   const [localValue, setLocalValue] = useState(val)
-
-  const valWithTz = (new Date(value - tzOffset)).toISOString().substring(0, 16)
 
   const props = {}
   if (maxDate) {
@@ -24,7 +23,9 @@ const DateTimeInput = ({ value, label, maxDate = null, minDate = null, onChange 
       if (e.target.value == '') {
         evt = null
       } else {
-        evt = new Date(evt)
+        const tzOffset = (new Date()).getTimezoneOffset() * 60000
+        const newDate = new Date(new Date(evt) - Math.abs(tzOffset))
+        evt = new Date(newDate.toISOString().substring(0, 16)+':00Z')
       }
       onChange(evt)
     }
@@ -36,8 +37,7 @@ const DateTimeInput = ({ value, label, maxDate = null, minDate = null, onChange 
       <div className="control">
       <input
         id={`dti-${label}`}
-        title={valWithTz}
-        value={valWithTz}
+        value={localValue}
         className="input is-fullwidth datetime-input"
         type="datetime-local"
         onChange={e => handleChange(e)}
