@@ -6,8 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test:unit": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:unit": "TZ=utc vitest",
+    "test:coverage": "TZ=utc vitest run --coverage"
   },
   "dependencies": {
     "bulma": "^0.9.3",
