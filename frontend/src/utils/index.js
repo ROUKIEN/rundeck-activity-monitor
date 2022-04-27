@@ -1,3 +1,5 @@
+import { format, intervalToDuration, formatDuration } from 'date-fns'
+
 export function parseExecutions (executions) {
   const columns = [
     { type: "string", id: "Job" },
@@ -44,9 +46,19 @@ export function parseExecutions (executions) {
             <span class="tag">Status</span>
             <span class="tag is-${tagLabel}">${execution.execution_status}</span>
           </div>
+          <div class="tags has-addons">
+            <span class="tag is-dark">Start</span>
+            <span class="tag is-info">${ format(new Date(execution.execution_start), `yyyy-MM-dd HH:mm:ss`) }</span>
+          </div>
+          <div class="tags has-addons">
+            <span class="tag is-dark">End</span>
+            <span class="tag is-info">${ format(new Date(execution.execution_end), `yyyy-MM-dd HH:mm:ss`) }</span>
+          </div>
           <ul>
-            <li>Started:&nbsp;${execution.execution_start}</li>
-            <li>Ended:&nbsp;${execution.execution_end}</li>
+            <li>Duration:&nbsp;${ formatDuration(intervalToDuration({
+              start: new Date(execution.execution_start),
+              end: new Date(execution.execution_end)
+            })) }</li>
           </ul>
         </div>
       </div>`,

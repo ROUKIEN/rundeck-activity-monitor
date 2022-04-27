@@ -12,7 +12,7 @@ const FailedToLoad = () =>
     <div className="message-body">Failed to render executions.</div>
   </div>
 
-function TimelineChart({ executions }) {
+function TimelineChart({ executions, start, end }) {
   const { data } = parseExecutions(executions)
 
   return (
@@ -23,6 +23,13 @@ function TimelineChart({ executions }) {
         {
           timeline: {
             showBarLabels: false
+          },
+          minValue: start,
+          maxValue: end,
+          hAxis: {
+            format: 'HH:mm',
+            minValue: start,
+            maxValue: end,
           }
         }
       }

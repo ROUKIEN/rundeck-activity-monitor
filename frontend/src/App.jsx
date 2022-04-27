@@ -4,9 +4,9 @@ import logo from './logo.svg'
 
 import { filterExecutions } from './utils/index'
 
-import DateRangeInput from './components/DateRangeInput'
 import SelectionFilters from './components/SelectionFilters'
 import RenderResults from './components/RenderResults'
+import TimeSearchDropdown from './components/TimeSearchDropdown'
 
 async function fetchFilters (options = {}) {
   const params = new URLSearchParams()
@@ -31,6 +31,28 @@ async function fetchExecutions (options = {}) {
   return await response.json()
 }
 
+function parseQueryString(setBeginDatefn, setEndDateFn) {
+  const searchParams = new URLSearchParams(window.location.search)
+
+  const params = {}
+
+  if (searchParams.has('begin')) {
+    const start = searchParams.get('begin')
+    params.begin = start
+    const newStartDate = new Date(parseInt(start))
+    setBeginDatefn(newStartDate)
+  }
+
+  if (searchParams.has('end')) {
+    const end = searchParams.get('end')
+    params.end = end
+    const newEndDate = new Date(parseInt(end))
+    setEndDateFn(newEndDate)
+  }
+
+  return params
+}
+
 function App() {
   const [data, setData] = useState(undefined)
   const [filteredData, setFilteredData] = useState(undefined)
@@ -43,7 +65,6 @@ function App() {
   endDateTime.setSeconds(0)
   const [beginDate, setBeginDate] = useState(beginDateTime)
   const [endDate, setEndDate] = useState(endDateTime)
-
   const [selectionFilters, setSelectionFilters] = useState({})
 
   const handleSelectionFiltersUpdate = (unfilteredData, newSelection) => {
@@ -53,13 +74,13 @@ function App() {
     setFilteredData(filteredExecutions)
   }
 
-  const handleRangeChange = async range => {
-    setBeginDate(range.start)
-    setEndDate(range.end)
+  const handleRangeChange = async ({ start, end }) => {
+    setBeginDate(start)
+    setEndDate(end)
 
     const params = {
-      begin: range.start.getTime(),
-      end: range.end.getTime()
+      begin: start.getTime(),
+      end: end.getTime()
     }
 
     const searchParams = new URLSearchParams(window.location.search)
@@ -78,23 +99,7 @@ function App() {
   }
 
   useEffect(async () => {
-    const searchParams = new URLSearchParams(window.location.search)
-
-    const params = {}
-
-    if (searchParams.has('begin')) {
-      const start = searchParams.get('begin')
-      params.begin = start
-      const newStartDate = new Date(parseInt(start))
-      setBeginDate(newStartDate)
-    }
-
-    if (searchParams.has('end')) {
-      const end = searchParams.get('end')
-      params.end = end
-      const newEndDate = new Date(parseInt(end))
-      setEndDate(newEndDate)
-    }
+    const params = parseQueryString(setBeginDate, setEndDate)
 
     const filters = await fetchFilters(params)
     setFilters(filters)
@@ -110,18 +115,15 @@ function App() {
       <nav className="navbar" role="navigation" aria-label="main navigation">
         <div className="navbar-brand">
           <a className="navbar-item" href="/">
-          <img src={logo} /> <span className="navbar-item has-text-weight-medium">Rundeck Activity Monitor</span>
+            <img src={logo} /> <span className="navbar-item has-text-weight-medium">Rundeck Activity Monitor</span>
           </a>
         </div>
         <div className="navbar-end">
-          <span className="navbar-item">
-            <DateRangeInput
-              startDateTime={beginDate}
-              endDateTime={endDate}
-              onChange={e => { handleRangeChange(e) }
-              }
-            ></DateRangeInput>
-          </span>
+          <TimeSearchDropdown
+            beginDate={beginDate}
+            endDate={endDate}
+            onConfirm={range => handleRangeChange(range)}
+          ></TimeSearchDropdown>
         </div>
       </nav>
       <section className="section is-small has-background-primary">
@@ -143,7 +145,11 @@ function App() {
               </aside>
             </div>
             <div className="column">
-              <RenderResults executions={filteredData}></RenderResults>
+              <RenderResults
+                executions={filteredData}
+                start={beginDate}
+                end={endDate}
+              ></RenderResults>
             </div>
           </div>
         </div>
