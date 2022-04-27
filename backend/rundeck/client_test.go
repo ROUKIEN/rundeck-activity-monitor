@@ -69,8 +69,15 @@ func TestListProjectExecutions(t *testing.T) {
 	}))
 	defer server.Close()
 
+	begin := time.Date(2022, 01, 01, 12, 0, 0, 0, time.UTC)
+	end := time.Date(2022, 01, 01, 13, 0, 0, 0, time.UTC)
+	so := spec.ScrapeOptions{
+		Begin: &begin,
+		End:   &end,
+	}
+
 	rd := NewRundeckClient(server.URL, "myAP1.T0k3n", 38, 0*time.Second)
-	ch := rd.ListProjectExecutions("my_project", time.Date(2022, 01, 01, 12, 0, 0, 0, time.UTC), time.Date(2022, 01, 01, 13, 0, 0, 0, time.UTC))
+	ch := rd.ListProjectExecutions("my_project", &so)
 
 	i := 0
 	for range ch {

@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strconv"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -78,16 +80,40 @@ type executionsResponse struct {
 	Executions []spec.Execution `json:"executions"`
 }
 
-func (rd *Rundeck) ListProjectExecutions(project string, begin time.Time, end time.Time) <-chan spec.Execution {
+func (rd *Rundeck) ListProjectExecutions(project string, so *spec.ScrapeOptions) <-chan spec.Execution {
+	// fmt.Printf("%s\n", so)
 	ch := make(chan spec.Execution)
 	max := 20
 	offset := 0
 	go func() {
 		for {
-			url := fmt.Sprintf("%s/api/%d/project/%s/executions?begin=%s&end=%s&max=%d&offset=%d", rd.Url, rd.ApiVersion, project, begin.UTC().Format("2006-01-02T15:04:05Z"), end.UTC().Format("2006-01-02T15:04:05Z"), max, offset)
-			resp, err := rd.Client.Get(url)
+			base, err := url.Parse(fmt.Sprintf("%s/api/%d/project/%s/executions", rd.Url, rd.ApiVersion, project))
 			if err != nil {
 				log.Error(err)
+				break
+			}
+			params := url.Values{}
+			params.Add("max", strconv.Itoa(max))
+			params.Add("offset", strconv.Itoa(offset))
+
+			if so.NewerThan != nil {
+				since := so.NewerThan.UTC().UnixMilli()
+				params.Add("begin", strconv.FormatInt(since, 10))
+			} else {
+				begin := so.Begin.UTC().UnixMilli()
+				params.Add("begin", strconv.FormatInt(begin, 10))
+				end := so.End.UTC().UnixMilli()
+				params.Add("end", strconv.FormatInt(end, 10))
+			}
+
+			base.RawQuery = params.Encode()
+
+			log.Trace(base.String())
+
+			resp, err := rd.Client.Get(base.String())
+			if err != nil {
+				log.Error(err)
+				break
 			}
 			defer resp.Body.Close()
 
