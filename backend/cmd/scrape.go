@@ -7,7 +7,6 @@ import (
 	"ROUKIEN/rundeck-activity-monitor/rundeck/spec"
 	"bufio"
 	"database/sql"
-	"math/rand"
 	"os"
 	"sync"
 	"time"
@@ -36,6 +35,11 @@ func NewScrapeCmd() *cli.Command {
 				Name:    "newer-than",
 				Aliases: []string{"nt"},
 				Usage:   "Scrape job executions whose completion date is newer than NEWER-THAN",
+			},
+			&cli.StringFlag{
+				Name:    "interval",
+				Aliases: []string{"i"},
+				Usage:   "triggers a scrape every INTERVAL",
 			},
 		},
 	}
@@ -68,8 +72,26 @@ func scrapeExecute(c *cli.Context) error {
 
 	log.Infof("there are %d instances to scrape", len(conf.Instances))
 
+	scrape(conf, scrapeOptions, db)
+
+	interval := c.String("interval")
+	if interval != "" {
+		duration, err := time.ParseDuration(interval)
+		if err != nil {
+			return err
+		}
+		ticker := time.NewTicker(duration)
+		for range ticker.C {
+			scrape(conf, scrapeOptions, db)
+		}
+	}
+
+	return nil
+}
+
+func scrape(conf *config.RAMConfig, scrapeOptions *spec.ScrapeOptions, db *sql.DB) {
+	log.Info("Starting scrape")
 	var wg sync.WaitGroup
-	rand.Seed(time.Now().UnixNano())
 	instanceExecutionsChannel := make(chan *config.ScrapedExecution)
 
 	for instance_label, instance := range conf.Instances {
@@ -96,8 +118,6 @@ func scrapeExecute(c *cli.Context) error {
 			log.Errorf("[%s]failed to save execution #%d: %s", execution.Instance, execution.Execution.ID, err.Error())
 		}
 	}
-
-	return nil
 }
 
 func scrapeInstanceExecutions(instance config.RundeckInstance, instanceLabel string, so *spec.ScrapeOptions, ch chan<- *config.ScrapedExecution) error {
@@ -127,7 +147,7 @@ func scrapeInstanceExecutions(instance config.RundeckInstance, instanceLabel str
 			log.WithFields(log.Fields{
 				"instance": instanceLabel,
 				"project":  p.Name,
-			}).Infof("scraped %d executions", i)
+			}).Debugf("scraped %d executions", i)
 		}(project)
 	}
 

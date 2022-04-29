@@ -29,11 +29,9 @@ func TestNewScrapeOptionsNewerThan(t *testing.T) {
 		"newer-than": "24h",
 	}
 
-	expectedDate := time.Now().Add(-24 * time.Hour)
-
 	so, err := NewScrapeOptions(opts)
 	assert.Nil(t, err)
 	assert.Nil(t, so.Begin)
 	assert.Nil(t, so.End)
-	assert.Equal(t, expectedDate.UTC().Hour(), so.NewerThan.UTC().Hour())
+	assert.Equal(t, time.Duration(24*time.Hour), *so.NewerThan)
 }

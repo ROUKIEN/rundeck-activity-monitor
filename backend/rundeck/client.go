@@ -97,7 +97,7 @@ func (rd *Rundeck) ListProjectExecutions(project string, so *spec.ScrapeOptions)
 			params.Add("offset", strconv.Itoa(offset))
 
 			if so.NewerThan != nil {
-				since := so.NewerThan.UTC().UnixMilli()
+				since := time.Now().Add(-*so.NewerThan).UTC().UnixMilli()
 				params.Add("begin", strconv.FormatInt(since, 10))
 			} else {
 				begin := so.Begin.UTC().UnixMilli()
