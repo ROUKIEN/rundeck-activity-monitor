@@ -35,7 +35,7 @@ func NewRundeckDate(datefrom time.Time) RundeckDate {
 type ScrapeOptions struct {
 	Begin     *time.Time
 	End       *time.Time
-	NewerThan *time.Time
+	NewerThan *time.Duration
 }
 
 func NewScrapeOptions(opts map[string]string) (*ScrapeOptions, error) {
@@ -45,9 +45,9 @@ func NewScrapeOptions(opts map[string]string) (*ScrapeOptions, error) {
 		if err != nil {
 			return nil, err
 		}
-		newTime := time.Now().Add(-duration)
+
 		return &ScrapeOptions{
-			NewerThan: &newTime,
+			NewerThan: &duration,
 		}, nil
 	}
 
