@@ -109,3 +109,8 @@ By default, the webserver will start on port 4000.
 RAM will query the executions that _ended_ in the given timeframe. That means that if you run the `scrape` command every minutes, you only need to scrape for the last past 5minutes (with the `--newer-than=5m` option). Scraping will be way quicker and will have a smaller footprint on your rundeck server.
 
 If you need to scrape jobs in a given timeframe (because something went wrong during a scrape), you can decide to scrape that timeframe by using the `begin` & `end` options.
+
+
+### Managing RAM log verbosity
+
+Start your processes with the `RAM_LOG_LEVEL` environment variable so something that [sirupsen/logrus](https://github.com/sirupsen/logrus) will understand (trace/debug/warning...)
