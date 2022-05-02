@@ -98,16 +98,21 @@ function App() {
     setFilteredData(filteredExecutions)
   }
 
-  useEffect(async () => {
+  useEffect(() => {
     const params = parseQueryString(setBeginDate, setEndDate)
 
-    const filters = await fetchFilters(params)
-    setFilters(filters)
+    async function fetchFiltersAndExecutions(params) {
+      const filters = await fetchFilters(params)
+      setFilters(filters)
 
-    const executions = await fetchExecutions(params)
-    setData(executions)
-    const filteredExecutions = filterExecutions(executions, selectionFilters)
-    setFilteredData(filteredExecutions)
+      const executions = await fetchExecutions(params)
+      setData(executions)
+      const filteredExecutions = filterExecutions(executions, selectionFilters)
+      setFilteredData(filteredExecutions)
+    }
+
+    fetchFiltersAndExecutions(params)
+    return () => {}
   }, [])
 
   return (
