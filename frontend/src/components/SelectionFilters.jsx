@@ -1,4 +1,5 @@
 import React from 'react'
+import DropdownFilter from './DropdownFilter'
 
 const isChecked = (selection, property, value) =>
   property in selection === true && selection[property].includes(value)
@@ -32,32 +33,33 @@ const SelectionFilters = ({ filters, selection, onChange }) => {
       <ul className="menu-list">
         { Object.keys(filters).map(filter => {
           return (
-            <li key={filter}>
-              {filter} ({filters[filter].length})
-              <ul>
-                { filters[filter].map(value =>
-                  <li key={value}>
-                    <label className="checkbox">
-                      <input
-                        key={Math.random()}
-                        type="checkbox"
-                        defaultChecked={isChecked(selection, filter, value)}
-                        onChange={e => handleChange(filter, value, e)}
-                      ></input>&nbsp;{value}
-                    </label>
-                  </li>
-                )}
-              </ul>
-            </li>
+            <DropdownFilter
+              filter={filter}
+              count={filters[filter].length}
+              key={filter}>
+              { filters[filter].map(value =>
+                <li key={value}>
+                  <label className="checkbox">
+                    <input
+                      key={Math.random()}
+                      type="checkbox"
+                      defaultChecked={isChecked(selection, filter, value)}
+                      onChange={e => handleChange(filter, value, e)}
+                    ></input>&nbsp;{value}
+                  </label>
+                </li>
+              )}
+            </DropdownFilter>
           )
         })}
         <li>
           <button
-            className="button is-small is-primary"
+            className="button is-small is-primary is-fullwidth"
+            data-testid="reset-search-btn"
             onClick={ () => {
               onChange({})
             }}
-          >Reset Filters</button>
+          >Reset Filters&nbsp;<span className="delete"></span></button>
         </li>
       </ul>
     </>

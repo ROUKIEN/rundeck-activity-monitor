@@ -11,10 +11,27 @@ exports[`SelectionFilters renders correctly > Rendered list without any facet se
     className="menu-list"
   >
     <li>
-      instances
-       (
-      3
-      )
+      <button
+        className="button is-small is-fullwidth"
+        onClick={[Function]}
+        style={
+          {
+            "cursor": "pointer",
+          }
+        }
+      >
+        <span
+          className="is-capitalized"
+        >
+          instances
+           (
+          3
+          )
+        </span>
+        <expandIcon
+          expanded={true}
+        />
+      </button>
       <ul>
         <li>
           <label
@@ -58,10 +75,27 @@ exports[`SelectionFilters renders correctly > Rendered list without any facet se
       </ul>
     </li>
     <li>
-      statuses
-       (
-      2
-      )
+      <button
+        className="button is-small is-fullwidth"
+        onClick={[Function]}
+        style={
+          {
+            "cursor": "pointer",
+          }
+        }
+      >
+        <span
+          className="is-capitalized"
+        >
+          statuses
+           (
+          2
+          )
+        </span>
+        <expandIcon
+          expanded={true}
+        />
+      </button>
       <ul>
         <li>
           <label
@@ -93,10 +127,14 @@ exports[`SelectionFilters renders correctly > Rendered list without any facet se
     </li>
     <li>
       <button
-        className="button is-small is-primary"
+        className="button is-small is-primary is-fullwidth"
+        data-testid="reset-search-btn"
         onClick={[Function]}
       >
-        Reset Filters
+        Reset Filters 
+        <span
+          className="delete"
+        />
       </button>
     </li>
   </ul>,
@@ -114,10 +152,27 @@ exports[`SelectionFilters renders with selection > Rendered list with foo instan
     className="menu-list"
   >
     <li>
-      instances
-       (
-      3
-      )
+      <button
+        className="button is-small is-fullwidth"
+        onClick={[Function]}
+        style={
+          {
+            "cursor": "pointer",
+          }
+        }
+      >
+        <span
+          className="is-capitalized"
+        >
+          instances
+           (
+          3
+          )
+        </span>
+        <expandIcon
+          expanded={true}
+        />
+      </button>
       <ul>
         <li>
           <label
@@ -161,10 +216,27 @@ exports[`SelectionFilters renders with selection > Rendered list with foo instan
       </ul>
     </li>
     <li>
-      statuses
-       (
-      2
-      )
+      <button
+        className="button is-small is-fullwidth"
+        onClick={[Function]}
+        style={
+          {
+            "cursor": "pointer",
+          }
+        }
+      >
+        <span
+          className="is-capitalized"
+        >
+          statuses
+           (
+          2
+          )
+        </span>
+        <expandIcon
+          expanded={true}
+        />
+      </button>
       <ul>
         <li>
           <label
@@ -196,10 +268,14 @@ exports[`SelectionFilters renders with selection > Rendered list with foo instan
     </li>
     <li>
       <button
-        className="button is-small is-primary"
+        className="button is-small is-primary is-fullwidth"
+        data-testid="reset-search-btn"
         onClick={[Function]}
       >
-        Reset Filters
+        Reset Filters 
+        <span
+          className="delete"
+        />
       </button>
     </li>
   </ul>,
