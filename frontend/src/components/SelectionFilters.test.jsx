@@ -9,7 +9,7 @@ test('SelectionFilters renders correctly', () => {
     statuses: ["succeeded", "failed"]
   }
   const tc = renderer.create(
-    <SelectionFilters filters={ filters } selection={ {} }></SelectionFilters>
+    <SelectionFilters filters={ filters } selection={ {} }/>
   ).toJSON()
   expect(tc).toBeDefined()
   expect(tc).toMatchSnapshot('Rendered list without any facet selected')
@@ -26,7 +26,7 @@ test('SelectionFilters renders with selection', () => {
   }
 
   const tc = renderer.create(
-    <SelectionFilters filters={ filters } selection={ selection }></SelectionFilters>
+    <SelectionFilters filters={ filters } selection={ selection }/>
   ).toJSON()
   expect(tc).toBeDefined()
   expect(tc).toMatchSnapshot('Rendered list with foo instance selected')
@@ -49,7 +49,7 @@ test('SelectionFilters triggers onChange when something gets selected', () => {
       filters={ filters }
       selection={ selection }
       onChange={fn}
-    ></SelectionFilters>
+    />
   )
 
   tc.root.findAllByType('input')[3].props.onChange()
@@ -81,7 +81,7 @@ test('SelectionFilters triggers onChange with empty selection when reset filters
     ></SelectionFilters>
   )
 
-  tc.root.findByType('button').props.onClick()
+  tc.root.findByProps({'data-testid': 'reset-search-btn'}).props.onClick()
   expect(fn).toHaveBeenCalledTimes(1)
   expect(fn).toHaveBeenCalledWith({})
 })
