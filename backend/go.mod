@@ -3,7 +3,7 @@ module ROUKIEN/rundeck-activity-monitor
 go 1.18
 
 require (
-	github.com/lib/pq v1.10.5
+	github.com/lib/pq v1.10.6
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.1
 	github.com/urfave/cli/v2 v2.5.1
