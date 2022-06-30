@@ -10,7 +10,7 @@
     "test:coverage": "TZ=utc vitest run --coverage"
   },
   "dependencies": {
-    "@mdi/js": "^6.6.96",
+    "@mdi/js": "^6.9.96",
     "@mdi/react": "^1.6.0",
     "bulma": "^0.9.4",
     "date-fns": "^2.28.0",
