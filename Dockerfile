@@ -12,7 +12,7 @@ COPY frontend/ /app
 RUN npm run build
 
 # golang builder, retrieving the bundled app from the previous step
-FROM golang:1.18 AS backend-builder
+FROM golang:1.19.0 AS backend-builder
 
 WORKDIR /app
 
