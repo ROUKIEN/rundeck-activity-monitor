@@ -1,5 +1,5 @@
 # let's start by building the javascript app
-FROM node:16-alpine AS frontend-builder
+FROM node:19-alpine AS frontend-builder
 
 WORKDIR /app
 
